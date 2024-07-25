@@ -82,7 +82,19 @@ const Application = ({ onClose, jobId, applicantId, applicantProfileId  }) => {
   //     }
   //   }
   // };
+  const MyComponent = () => {
+    const [formData, setFormData] = useState({
+      application_date: new Date().toISOString().split('T')[0], // Set the current date in YYYY-MM-DD format
+    });
   
+    const handleChange = (event) => {
+      const { name, value } = event.target;
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    };
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -114,50 +126,29 @@ const Application = ({ onClose, jobId, applicantId, applicantProfileId  }) => {
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
-              <TextField
-                label="Job"
-                name="job"
-                value={formData.job}
-                onChange={handleChange}
-                fullWidth
-                required
-                InputProps={{
-                  style: {
-                    borderRadius: '20px',
-                    fontWeight: 'bold',
-                  }
-                }}
-                InputLabelProps={{
-                  style: {
-                    fontWeight: 'bold',
-                  }
-                }}
-                disabled={isDuplicate}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Application Date"
-                type="date"
-                name="application_date"
-                value={formData.application_date}
-                onChange={handleChange}
-                fullWidth
-                required
-                InputProps={{
-                  style: {
-                    borderRadius: '20px',
-                    fontWeight: 'bold',
-                  }
-                }}
-                InputLabelProps={{
-                  style: {
-                    fontWeight: 'bold',
-                  }
-                }}
-                disabled={isDuplicate}
-              />
-            </Grid>
+                <TextField
+                  label="Application Date"
+                  type="date"
+                  name="application_date"
+                  value={formData.application_date}
+                  // onChange={handleChange}
+                  fullWidth
+                  required
+                  InputProps={{
+                    style: {
+                      borderRadius: '20px',
+                      fontWeight: 'bold',
+                    },
+                    readOnly: true, // Added this line
+                  }}
+                  InputLabelProps={{
+                    style: {
+                      fontWeight: 'bold',
+                    },
+                  }}
+                  disabled={true}
+                />
+              </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Stage"
@@ -171,7 +162,8 @@ const Application = ({ onClose, jobId, applicantId, applicantProfileId  }) => {
                   style: {
                     borderRadius: '20px',
                     fontWeight: 'bold',
-                  }
+                  },
+                  readOnly: true, 
                 }}
                 InputLabelProps={{
                   style: {
@@ -218,7 +210,8 @@ const Application = ({ onClose, jobId, applicantId, applicantProfileId  }) => {
                   style: {
                     borderRadius: '20px',
                     fontWeight: 'bold',
-                  }
+                  },
+                  readOnly: true, 
                 }}
                 InputLabelProps={{
                   style: {
