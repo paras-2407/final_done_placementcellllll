@@ -378,21 +378,48 @@ class ApplicationView(APIView):
             status=status.HTTP_200_OK,
         )
     
-    def patch(self, request, pk=None):
-        try:
-            application = self.querysets.get(pk=pk)
-        except Application.DoesNotExist:
-            return Response(
-                {"message": "Application not found"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+    # def patch(self, request, pk=None):
+    #     try:
+    #         application = self.querysets.get(pk=pk)
+    #     except Application.DoesNotExist:
+    #         return Response(
+    #             {"message": "Application not found"},
+    #             status=status.HTTP_404_NOT_FOUND,
+    #         )
 
-        serial_data = self.serializer_class(application, data=request.data, partial=True)
-        if serial_data.is_valid():
-            serial_data.save()
-            return Response({"data": serial_data.data}, status=status.HTTP_200_OK)
-        else:
-            return Response(serial_data.errors, status=status.HTTP_400_BAD_REQUEST)
+    #     serial_data = self.serializer_class(application, data=request.data, partial=True)
+    #     if serial_data.is_valid():
+    #         serial_data.save()
+    #         return Response({"data": serial_data.data}, status=status.HTTP_200_OK)
+    #     else:
+    #         return Response(serial_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def patch(self, request):
+        try:
+            applicant_id = request.query_params.get('applicant')
+            job_id = request.query_params.get('job')
+
+            if not applicant_id or not job_id:
+                return Response({'error': 'Applicant ID and Job ID are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Fetch the application based on applicant_id and job_id
+            application = Application.objects.get(applicant_id=applicant_id, job_id=job_id)
+            
+            # Serialize the instance with updated data
+            serializer = self.serializer_class(application, data={'status': 'shortlisted'}, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+
+                return Response({'message': 'Application shortlisted successfully.'}, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except Application.DoesNotExist:
+            return Response({'error': 'Application not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class SkillList(generics.ListCreateAPIView):
